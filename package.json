@@ -1,0 +1,9 @@
+{
+  "name": "event-tap",
+  "description": "Post keyboard events to the Quartz window server on OS X to implement a virtual keyboard",
+  "version": "0.0.1",
+  "main": "event-tap.js",
+  "dependencies": {
+    "bindings": "1.0"
+  }
+}
