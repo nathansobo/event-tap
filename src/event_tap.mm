@@ -30,7 +30,7 @@ Handle<Value> PostMouseEvent(const Arguments& args) {
   CGPoint point;
 
   if (args.Length() < 2 || !args[0]->IsNumber() || !args[1]->IsNumber()) {
-    ThrowException(Exception::TypeError(String::New("You must pass a paissr of integer coordinates for geometric translation")));
+    ThrowException(Exception::TypeError(String::New("You must pass a pair of integer X and Y coordinates")));
     return scope.Close(Undefined());
   }
 
