@@ -39,7 +39,7 @@ Handle<Value> PostMouseEvent(const Arguments& args) {
   v8::String::Utf8Value eventTypeString(args[0]->ToString());
   CGEventType eventType = EventTypeFromString(std::string(*eventTypeString));
   if (eventType == kCGEventNull) {
-    ThrowException(Exception::TypeError(String::New("Unrecognized event type")));
+    ThrowException(Exception::TypeError(String::Concat(String::New("Unrecognized event type: "), args[0]->ToString())));
     return scope.Close(Undefined());
   }
 
