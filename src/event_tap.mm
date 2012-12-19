@@ -6,6 +6,7 @@
 using namespace v8;
 
 CGEventType EventTypeFromString(std::string eventTypeString);
+CGMouseButton MouseButtonFromString(std::string mouseButtonString);
 
 Handle<Value> PostKeyboardEvent(const Arguments& args) {
   HandleScope scope;
@@ -47,7 +48,24 @@ Handle<Value> PostMouseEvent(const Arguments& args) {
   point.x = args[1]->NumberValue();
   point.y = args[2]->NumberValue();
 
-  CGEventRef event = CGEventCreateMouseEvent(NULL, eventType, point, NULL);
+
+  CGMouseButton mouseButton = kCGMouseButtonLeft;
+  if (args.Length() > 3) {
+    if (!args[3]->IsString()) {
+      ThrowException(Exception::TypeError(String::New("If you supply an optional mouse button argument, it must be a string")));
+      return scope.Close(Undefined());
+    }
+
+    v8::String::Utf8Value mouseButtonString(args[3]->ToString());
+    CGMouseButton mouseButton = MouseButtonFromString(std::string(*mouseButtonString));
+
+    if (mouseButton == 4) {
+      ThrowException(Exception::TypeError(String::New("Mouse button not recognized (must be 'left', 'right', or 'center')")));
+      return scope.Close(Undefined());
+    }
+  }
+
+  CGEventRef event = CGEventCreateMouseEvent(NULL, eventType, point, mouseButton);
   CGEventPost(kCGHIDEventTap, event);
 
   CFRelease(event);
@@ -74,6 +92,13 @@ CGEventType EventTypeFromString(std::string eventTypeString) {
   if (eventTypeString == "disabledByTimeout") return kCGEventTapDisabledByTimeout;
   if (eventTypeString == "disabledByUserInput") return kCGEventTapDisabledByUserInput;
   return kCGEventNull;
+}
+
+CGMouseButton MouseButtonFromString(std::string mouseButtonString) {
+  if (mouseButtonString == "left") return kCGMouseButtonLeft;
+  if (mouseButtonString == "right") return kCGMouseButtonRight;
+  if (mouseButtonString == "center") return kCGMouseButtonCenter;
+  return 4;
 }
 
 Handle<Value> GetMouseLocation(const Arguments& args) {
