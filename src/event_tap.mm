@@ -1,6 +1,7 @@
 #import <node.h>
 #import <v8.h>
 #import <ApplicationServices/ApplicationServices.h>
+#import <string>
 
 using namespace v8;
 
