@@ -38,6 +38,10 @@ Handle<Value> PostMouseEvent(const Arguments& args) {
 
   v8::String::Utf8Value eventTypeString(args[0]->ToString());
   CGEventType eventType = EventTypeFromString(std::string(*eventTypeString));
+  if (eventType == kCGEventNull) {
+    ThrowException(Exception::TypeError(String::New("Unrecognized event type")));
+    return scope.Close(Undefined());
+  }
 
   CGPoint point;
   point.x = args[1]->NumberValue();
@@ -51,7 +55,6 @@ Handle<Value> PostMouseEvent(const Arguments& args) {
 }
 
 CGEventType EventTypeFromString(std::string eventTypeString) {
-  if (eventTypeString == "null") return kCGEventNull;
   if (eventTypeString == "leftMouseDown") return kCGEventLeftMouseDown;
   if (eventTypeString == "leftMouseUp") return kCGEventLeftMouseUp;
   if (eventTypeString == "rightMouseDown") return kCGEventRightMouseDown;
@@ -70,7 +73,7 @@ CGEventType EventTypeFromString(std::string eventTypeString) {
   if (eventTypeString == "otherMouseDragged") return kCGEventOtherMouseDragged;
   if (eventTypeString == "disabledByTimeout") return kCGEventTapDisabledByTimeout;
   if (eventTypeString == "disabledByUserInput") return kCGEventTapDisabledByUserInput;
-  return NULL;
+  return kCGEventNull;
 }
 
 Handle<Value> GetMouseLocation(const Arguments& args) {
